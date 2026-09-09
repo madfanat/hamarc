@@ -51,8 +51,6 @@ class Hamming {
   }
 
  private:
-  int block_size_;
-  int data_bits_;
   static int Bit(const int& number, const int& index) {
     return number >> index & 1;
   }
@@ -81,4 +79,7 @@ class Hamming {
 
     return data ^ 1 << syndrome;
   }
+
+  int block_size_;
+  int data_bits_;
 };

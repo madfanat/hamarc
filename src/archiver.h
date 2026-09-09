@@ -92,7 +92,7 @@ class HammingArchiver {
   void Delete(const std::string& archive,
               const std::vector<std::string>& files) {
     auto input = OpenInput(archive);
-    TemporaryDirectory temporary(archive);
+    Temporary temporary(archive);
     const auto temporary_archive = temporary.path / "archive";
     auto output = OpenOutput(temporary_archive.string());
 
@@ -127,7 +127,6 @@ class HammingArchiver {
     input.close();
     if (!input) throw std::runtime_error("Failed to close the archive input.");
     output.close();
-    // Rename replaces the destination without first removing the original.
     std::filesystem::rename(temporary_archive, archive);
     std::cout << "The archive " << archive << " was successfully updated.\n";
   }
@@ -150,12 +149,10 @@ class HammingArchiver {
   }
 
  private:
-  Hamming hamming_;
-
-  struct TemporaryDirectory {
+  struct Temporary {
     std::filesystem::path path;
 
-    explicit TemporaryDirectory(const std::string& archive) {
+    explicit Temporary(const std::string& archive) {
       std::random_device random;
       for (int attempt = 0; attempt < 32; ++attempt) {
         auto candidate = std::filesystem::path(archive);
@@ -168,7 +165,7 @@ class HammingArchiver {
       throw std::runtime_error("Cannot create a temporary archive directory.");
     }
 
-    ~TemporaryDirectory() {
+    ~Temporary() {
       std::error_code error;
       std::filesystem::remove_all(path, error);
     }
@@ -181,9 +178,8 @@ class HammingArchiver {
     return input;
   }
 
-  static std::ofstream OpenOutput(
-      const std::string& file,
-      std::ios::openmode mode = std::ios::binary) {
+  static std::ofstream OpenOutput(const std::string& file,
+                                  std::ios::openmode mode = std::ios::binary) {
     std::ofstream output;
     output.open(file, mode);
     if (!output) throw std::runtime_error("Cannot open output: " + file);
@@ -262,4 +258,6 @@ class HammingArchiver {
     }
     if (!input.eof()) throw std::runtime_error("Failed to read " + file);
   }
+
+  Hamming hamming_;
 };

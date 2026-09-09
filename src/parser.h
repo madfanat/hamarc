@@ -5,19 +5,6 @@
 
 class ArgumentParser {
  public:
-  enum Mode {
-    kDefault,
-    kCreate,
-    kList,
-    kExtract,
-    kAppend,
-    kDelete,
-    kConcatenate
-  };
-  Mode mode = kDefault;
-  std::string archive;
-  std::vector<std::string> files;
-
   bool Parse(const int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
       std::string argument = argv[i];
@@ -56,4 +43,18 @@ class ArgumentParser {
     }
     return true;
   }
+
+  enum Mode {
+    kDefault,
+    kCreate,
+    kList,
+    kExtract,
+    kAppend,
+    kDelete,
+    kConcatenate
+  };
+
+  Mode mode = kDefault;
+  std::string archive;
+  std::vector<std::string> files;
 };
